@@ -1,6 +1,9 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * Autocorrect
@@ -11,14 +14,16 @@ import java.io.IOException;
  * @author YOUR NAME HERE
  */
 public class Autocorrect {
-
+    String[] dictionary;
+    int threshold;
     /**
      * Constucts an instance of the Autocorrect class.
      * @param words The dictionary of acceptable words.
      * @param threshold The maximum number of edits a suggestion can have.
      */
     public Autocorrect(String[] words, int threshold) {
-
+        this.threshold = threshold;
+        dictionary = words;
     }
 
     /**
@@ -28,6 +33,26 @@ public class Autocorrect {
      * to threshold, sorted by edit distnace, then sorted alphabetically.
      */
     public String[] runTest(String typed) {
+        // maybe add hashmap first to check if the word is already in the dictionary
+//        HashSet<String> dictHash = new HashSet<>(List.of(dictionary));
+//        if (dictHash.contains(typed)) {
+//            return "";
+//        }
+        ArrayList<String> candidates = new ArrayList<>();
+        int stringLen = typed.length();
+        for (String s : dictionary) {
+            if (s.length() > stringLen-3 && s.length() < stringLen+3) {
+                candidates.add(s);
+            }
+        }
+
+        ArrayList<Integer> positions = new ArrayList<>();
+        ArrayList<String> options = new ArrayList<>();
+        for (String s : candidates) {
+            int editDistance = calcDistance(typed, s);
+
+        }
+
 
         return new String[0];
     }
