@@ -46,15 +46,45 @@ public class Autocorrect {
             }
         }
 
-        ArrayList<Integer> positions = new ArrayList<>();
+        int[] positions = new int[threshold];
+        for (int i = 0; i < threshold; i++) {
+            positions[i] = i;
+        }
         ArrayList<String> options = new ArrayList<>();
         for (String s : candidates) {
             int editDistance = calcDistance(typed, s);
 
+            options.add(positions.get(editDistance), s);
         }
 
 
         return new String[0];
+    }
+
+
+    public int calcDistance(String s, String goal) {
+        int[][] board = new int[s.length()+1][goal.length()+1];
+
+        for (int i = 0; i < s.length(); i++) {
+            board[i][0] = i;
+        }
+        for (int i = 0; i < goal.length(); i++) {
+            board[0][i] = i;
+        }
+
+        for (int i = 1; i < s.length(); i++) {
+            for (int j = 1; j < goal.length(); j++) {
+                if (s.charAt(s.length()-1) == goal.charAt(goal.length()-1)) {
+                    board[i][j] = board[i-1][j-1];
+                }
+                else {
+                    board[i][j] = 1 + Math.min(board[i-1][j],
+                                      Math.min(board[i][j-1],
+                                                board[i-1][j-1]));
+                }
+            }
+        }
+        return board[s.length()][goal.length()];
     }
 
 
