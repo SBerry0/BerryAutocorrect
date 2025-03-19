@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -41,40 +42,53 @@ public class Autocorrect {
         ArrayList<String> candidates = new ArrayList<>();
         int stringLen = typed.length();
         for (String s : dictionary) {
-            if (s.length() > stringLen-3 && s.length() < stringLen+3) {
+            if (s.length() > stringLen-4 && s.length() < stringLen+4) {
                 candidates.add(s);
             }
         }
 
-        int[] positions = new int[threshold];
-        for (int i = 0; i < threshold; i++) {
+        int[] positions = new int[threshold+1];
+        for (int i = 0; i < threshold+1; i++) {
             positions[i] = i;
         }
         ArrayList<String> options = new ArrayList<>();
         for (String s : candidates) {
             int editDistance = calcDistance(typed, s);
-
-            options.add(positions.get(editDistance), s);
+            System.out.println(editDistance);
+            if (editDistance < positions.length) {
+                options.add(positions[editDistance], s);
+                for (int i = editDistance+1; i < positions.length; i++) {
+                    positions[i]++;
+                }
+            }
         }
+        int outLength = Math.min(positions[threshold], options.size());
+        String[] out = new String[outLength];
+        for (int i = 0; i < outLength; i++) {
+            out[i] = options.get(i);
+        }
+        System.out.println(Arrays.toString(positions));
+//        System.out.println();
+        System.out.println(options);
 
 
-        return new String[0];
+        return out;
     }
 
 
     public int calcDistance(String s, String goal) {
         int[][] board = new int[s.length()+1][goal.length()+1];
 
-        for (int i = 0; i < s.length(); i++) {
+        for (int i = 0; i < s.length()+1; i++) {
             board[i][0] = i;
         }
-        for (int i = 0; i < goal.length(); i++) {
+        for (int i = 0; i < goal.length()+1; i++) {
             board[0][i] = i;
         }
 
-        for (int i = 1; i < s.length(); i++) {
-            for (int j = 1; j < goal.length(); j++) {
-                if (s.charAt(s.length()-1) == goal.charAt(goal.length()-1)) {
+        for (int i = 1; i < s.length()+1; i++) {
+            for (int j = 1; j < goal.length()+1; j++) {
+                if (s.charAt(i-1) == goal.charAt(j-1)) {
                     board[i][j] = board[i-1][j-1];
                 }
                 else {
