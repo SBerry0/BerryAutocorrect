@@ -12,10 +12,11 @@ import java.util.List;
  * A command-line tool to suggest similar words when given one not in the dictionary.
  * </p>
  * @author Zach Blick
- * @author YOUR NAME HERE
+ * @author Sohum Berry
  */
 public class Autocorrect {
     String[] dictionary;
+    HashSet<String> dictHash;
     int threshold;
     /**
      * Constucts an instance of the Autocorrect class.
@@ -25,52 +26,46 @@ public class Autocorrect {
     public Autocorrect(String[] words, int threshold) {
         this.threshold = threshold;
         dictionary = words;
+        dictHash = new HashSet<>(List.of(dictionary));
     }
 
     /**
      * Runs a test from the tester file, AutocorrectTester.
      * @param typed The (potentially) misspelled word, provided by the user.
      * @return An array of all dictionary words with an edit distance less than or equal
-     * to threshold, sorted by edit distnace, then sorted alphabetically.
+     * to threshold, sorted by edit distance, then sorted alphabetically.
      */
     public String[] runTest(String typed) {
-        // maybe add hashmap first to check if the word is already in the dictionary
-//        HashSet<String> dictHash = new HashSet<>(List.of(dictionary));
-//        if (dictHash.contains(typed)) {
-//            return "";
-//        }
+        if (dictHash.contains(typed)) {
+            return new String[0];
+        }
+
         ArrayList<String> candidates = new ArrayList<>();
         int stringLen = typed.length();
         for (String s : dictionary) {
-            if (s.length() > stringLen-4 && s.length() < stringLen+4) {
+            if (s.length() > stringLen-threshold && s.length() < stringLen+threshold) {
                 candidates.add(s);
             }
         }
 
-        int[] positions = new int[threshold+1];
-        for (int i = 0; i < threshold+1; i++) {
-            positions[i] = i;
+        int[] positions = new int[threshold];
+        for (int i = 0; i < threshold; i++) {
+            positions[i] = 0;
         }
         ArrayList<String> options = new ArrayList<>();
         for (String s : candidates) {
             int editDistance = calcDistance(typed, s);
-            System.out.println(editDistance);
-            if (editDistance < positions.length) {
-                options.add(positions[editDistance], s);
-                for (int i = editDistance+1; i < positions.length; i++) {
+            if (editDistance <= positions.length) {
+                options.add(positions[editDistance-1], s);
+                for (int i = editDistance-1; i < positions.length; i++) {
                     positions[i]++;
                 }
             }
         }
-        int outLength = Math.min(positions[threshold], options.size());
-        String[] out = new String[outLength];
-        for (int i = 0; i < outLength; i++) {
+        String[] out = new String[options.size()];
+        for (int i = 0; i < options.size(); i++) {
             out[i] = options.get(i);
         }
-        System.out.println(Arrays.toString(positions));
-//        System.out.println();
-        System.out.println(options);
-
 
         return out;
     }
