@@ -1,10 +1,7 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * Autocorrect
@@ -12,11 +9,12 @@ import java.util.List;
  * A command-line tool to suggest similar words when given one not in the dictionary.
  * </p>
  * @author Zach Blick
- * @author YOUR NAME HERE
+ * @author Sohum Berry
  */
 public class Autocorrect {
     String[] dictionary;
     int threshold;
+    HashSet<String> dictHash;
     /**
      * Constucts an instance of the Autocorrect class.
      * @param words The dictionary of acceptable words.
@@ -25,20 +23,19 @@ public class Autocorrect {
     public Autocorrect(String[] words, int threshold) {
         this.threshold = threshold;
         dictionary = words;
+        dictHash = new HashSet<>(List.of(dictionary));
     }
 
     /**
      * Runs a test from the tester file, AutocorrectTester.
      * @param typed The (potentially) misspelled word, provided by the user.
      * @return An array of all dictionary words with an edit distance less than or equal
-     * to threshold, sorted by edit distnace, then sorted alphabetically.
+     * to threshold, sorted by edit distance, then sorted alphabetically.
      */
     public String[] runTest(String typed) {
-        // maybe add hashmap first to check if the word is already in the dictionary
-//        HashSet<String> dictHash = new HashSet<>(List.of(dictionary));
-//        if (dictHash.contains(typed)) {
-//            return "";
-//        }
+        if (dictHash.contains(typed)) {
+            return new String[0];
+        }
         ArrayList<String> candidates = new ArrayList<>();
         int stringLen = typed.length();
         for (String s : dictionary) {
@@ -61,6 +58,11 @@ public class Autocorrect {
                 }
             }
         }
+
+        if (options.isEmpty()) {
+            return new String[] {"invld"};
+        }
+
         String[] out = new String[options.size()];
         for (int i = 0; i < options.size(); i++) {
             out[i] = options.get(i);
@@ -119,6 +121,37 @@ public class Autocorrect {
         }
         catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static void main(String[] args) {
+        String[] dict = loadDictionary("large");
+
+        Scanner s = new Scanner(System.in);
+        Autocorrect a = new Autocorrect(dict, 3);
+
+        while (true) {
+            System.out.println("Please enter a word:");
+            String input = s.nextLine();
+            if (input.equals("q")) {
+                break;
+            }
+            String[] results = a.runTest(input);
+            if (results.length == 0) {
+                System.out.println(input + " is spelled correctly");
+            } else if (results[0].equals("invld")) {
+                System.out.println("No matches found.");
+            } else {
+                System.out.println("Did you mean:");
+                for (int i = 0; i < results.length; i++) {
+                    System.out.print(results[i]);
+                    if (i < results.length-1) {
+                        System.out.print(", ");
+                    } else {
+                        System.out.println();
+                    }
+                }
+            }
         }
     }
 }
