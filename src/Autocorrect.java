@@ -12,11 +12,10 @@ import java.util.List;
  * A command-line tool to suggest similar words when given one not in the dictionary.
  * </p>
  * @author Zach Blick
- * @author Sohum Berry
+ * @author YOUR NAME HERE
  */
 public class Autocorrect {
     String[] dictionary;
-    HashSet<String> dictHash;
     int threshold;
     /**
      * Constucts an instance of the Autocorrect class.
@@ -26,24 +25,24 @@ public class Autocorrect {
     public Autocorrect(String[] words, int threshold) {
         this.threshold = threshold;
         dictionary = words;
-        dictHash = new HashSet<>(List.of(dictionary));
     }
 
     /**
      * Runs a test from the tester file, AutocorrectTester.
      * @param typed The (potentially) misspelled word, provided by the user.
      * @return An array of all dictionary words with an edit distance less than or equal
-     * to threshold, sorted by edit distance, then sorted alphabetically.
+     * to threshold, sorted by edit distnace, then sorted alphabetically.
      */
     public String[] runTest(String typed) {
-        if (dictHash.contains(typed)) {
-            return new String[0];
-        }
-
+        // maybe add hashmap first to check if the word is already in the dictionary
+//        HashSet<String> dictHash = new HashSet<>(List.of(dictionary));
+//        if (dictHash.contains(typed)) {
+//            return "";
+//        }
         ArrayList<String> candidates = new ArrayList<>();
         int stringLen = typed.length();
         for (String s : dictionary) {
-            if (s.length() > stringLen-threshold && s.length() < stringLen+threshold) {
+            if (s.length() > stringLen-threshold-1 && s.length() < stringLen+threshold+1) {
                 candidates.add(s);
             }
         }
