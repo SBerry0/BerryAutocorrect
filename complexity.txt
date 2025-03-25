@@ -1,0 +1,10 @@
+n = length of dictionary
+l = length of average word in dictionary
+
+
+Initializing hashset: O(n)
+Filling Candidates: O(n)
+Filling Positions: O(1)
+Filling Options Sorted By Edit Distance: O(l*l*n)
+Incrementing Positions: O(1)
+Converting ArrayList to Array: O(n)
